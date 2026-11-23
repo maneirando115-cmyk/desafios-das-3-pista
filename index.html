@@ -16,9 +16,12 @@ canvas{width:100%;height:auto;display:block;background:#000}
 button{font-family:inherit;cursor:pointer}
 #bt{font-size:1.5em;padding:.4em 1.6em;border:0;border-radius:.5em;background:linear-gradient(#ffb12a,#e0600a);color:#fff;font-weight:bold;box-shadow:0 4px 0 #8a3200}
 #bt:active{transform:translateY(3px);box-shadow:none}
-#som{position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.5);border:1px solid #fff5;color:#fff;border-radius:8px;font-size:16px;padding:2px 8px}
-#ctl{display:none;justify-content:space-between;width:100%;box-sizing:border-box;padding:6px 10px}
-#ctl button{width:68px;height:58px;font-size:24px;border-radius:14px;border:2px solid #fff4;background:#ffffff1c;color:#fff;margin:0 4px}
+#som{position:absolute;left:8px;top:40px;background:rgba(0,0,0,.5);border:1px solid #fff5;color:#fff;border-radius:8px;font-size:16px;padding:2px 8px}
+#ctl{display:none;position:absolute;left:0;right:0;bottom:0;justify-content:space-between;align-items:flex-end;box-sizing:border-box;padding:10px 14px;pointer-events:none;line-height:1}
+#ctl div{display:flex;align-items:flex-end;gap:10px}
+#ctl button{pointer-events:auto;width:72px;height:64px;font-size:30px;border-radius:16px;border:2px solid #fff6;background:#ffffff26;color:#fff;margin:0;-webkit-tap-highlight-color:transparent}
+#ctl button[data-k=j]{width:92px;height:84px;font-size:42px;border-radius:50%}
+#ctl button[data-k=r]{width:56px;height:56px;font-size:24px;border-radius:50%}
 #ctl button.on{background:#ff9d2e99}
 @media (hover:none){#ctl{display:flex}}
 </style>
@@ -28,16 +31,16 @@ button{font-family:inherit;cursor:pointer}
   <div id="box">
     <canvas id="c"></canvas>
     <button id="som" title="Som (M)">🔊</button>
+    <div id="ctl">
+      <div><button data-k="j">⬆</button></div>
+      <div><button data-k="r" title="Correr">🏃</button><button data-k="l">◀</button><button data-k="d">▶</button></div>
+    </div>
     <div id="tela">
       <h1 id="ti">Aventura na Caverna</h1>
       <p id="tx">Ajude o homem das cavernas a coletar minérios, escapar da lava, dos espinhos e das pedras que caem, e abrir a porta de cada uma das 4 cavernas!</p>
       <button id="bt">Jogar</button>
       <small>← → ou A D: andar • Shift: correr • Espaço / ↑ / W: pular • M: som</small>
     </div>
-  </div>
-  <div id="ctl">
-    <div><button data-k="l">◀</button><button data-k="d">▶</button></div>
-    <div><button data-k="r">🏃</button><button data-k="j">⤒</button></div>
   </div>
 </div>
 
@@ -278,7 +281,7 @@ function desenhar(){
 // ================== LOOP PRINCIPAL ==================
 let ult=0,acc=0;
 function loop(t){acc+=Math.min(t-ult,100);ult=t;while(acc>=16.67){atualizar();acc-=16.67}desenhar();requestAnimationFrame(loop)}
-function ajustar(){const h=document.getElementById('ctl').offsetHeight,s=Math.min(innerWidth/VW,(innerHeight-h-4)/VH);
+function ajustar(){const s=Math.min(innerWidth/VW,innerHeight/VH);
   const b=document.getElementById('box');b.style.width=Math.floor(VW*s)+'px';b.style.fontSize=Math.max(9,18*s)+'px'}
 addEventListener('resize',ajustar);ajustar();
 carregar(0);requestAnimationFrame(loop);   // mostra a caverna ao fundo da tela inicial
