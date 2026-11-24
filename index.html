@@ -9,19 +9,25 @@ html,body{margin:0;height:100%;background:#0b0710;color:#fff;font-family:Georgia
 #wrap{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
 #box{position:relative;line-height:0;box-shadow:0 0 40px #000}
 canvas{width:100%;height:auto;display:block;background:#000}
-#tela{position:absolute;inset:0;background:rgba(10,5,15,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.4;padding:1em}
-#tela h1{font-size:2.6em;margin:0 0 .3em;color:#ffcf4a;text-shadow:0 0 18px #ff8a1c,0 3px 0 #7a3b00}
+#tela,#ptela{position:absolute;inset:0;background:rgba(10,5,15,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.4;padding:1em}
+#trofeu{width:7em;filter:drop-shadow(0 0 16px #ffb000);animation:flut 1.6s ease-in-out infinite}
+@keyframes flut{50%{transform:translateY(-8px) scale(1.05)}}
+#tela h1,#ptela h1{font-size:2.6em;margin:0 0 .3em;color:#ffcf4a;text-shadow:0 0 18px #ff8a1c,0 3px 0 #7a3b00}
 #tela p{max-width:34em;margin:.3em 0 1em;font-size:1.05em}
 #tela small{opacity:.75;margin-top:1em;font-size:.85em}
 button{font-family:inherit;cursor:pointer}
-#bt{font-size:1.5em;padding:.4em 1.6em;border:0;border-radius:.5em;background:linear-gradient(#ffb12a,#e0600a);color:#fff;font-weight:bold;box-shadow:0 4px 0 #8a3200}
-#bt:active{transform:translateY(3px);box-shadow:none}
-#som{position:absolute;left:8px;top:40px;background:rgba(0,0,0,.5);border:1px solid #fff5;color:#fff;border-radius:8px;font-size:16px;padding:2px 8px}
+#bt,#bc{font-size:1.5em;padding:.4em 1.6em;border:0;border-radius:.5em;background:linear-gradient(#ffb12a,#e0600a);color:#fff;font-weight:bold;box-shadow:0 4px 0 #8a3200}
+#bt:active,#bc:active{transform:translateY(3px);box-shadow:none}
+#som,#pausa{position:absolute;left:8px;top:40px;background:rgba(0,0,0,.55);border:1px solid #fff7;color:#fff;border-radius:8px;font-size:20px;padding:3px 10px;z-index:6}
+#pausa{left:62px}
+#ptela{display:none;z-index:5}
+#br{margin-top:.8em;font-size:1em;padding:.3em 1em;border-radius:.5em;border:1px solid #fff6;background:transparent;color:#fff}
 #ctl{display:none;position:absolute;left:0;right:0;bottom:0;justify-content:space-between;align-items:flex-end;box-sizing:border-box;padding:10px 14px;pointer-events:none;line-height:1}
 #ctl div{display:flex;align-items:flex-end;gap:10px}
 #ctl button{pointer-events:auto;width:72px;height:64px;font-size:30px;border-radius:16px;border:2px solid #fff6;background:#ffffff26;color:#fff;margin:0;-webkit-tap-highlight-color:transparent}
 #ctl button[data-k=j]{width:92px;height:84px;font-size:42px;border-radius:50%}
-#ctl button[data-k=r]{width:56px;height:56px;font-size:24px;border-radius:50%}
+#ctl button[data-k=r]{width:70px;height:70px;font-size:26px;border-radius:50%;line-height:1.1}
+#ctl button small{display:block;font-size:10px;font-weight:bold}
 #ctl button.on{background:#ff9d2e99}
 @media (hover:none){#ctl{display:flex}}
 </style>
@@ -30,16 +36,26 @@ button{font-family:inherit;cursor:pointer}
 <div id="wrap">
   <div id="box">
     <canvas id="c"></canvas>
-    <button id="som" title="Som (M)">🔊</button>
+    <button id="som" title="Som (M)">🔊</button><button id="pausa" title="Pausa (P)">⏸</button>
     <div id="ctl">
-      <div><button data-k="j">⬆</button></div>
-      <div><button data-k="r" title="Correr">🏃</button><button data-k="l">◀</button><button data-k="d">▶</button></div>
+      <div><button data-k="r" title="Correr mais rápido">🏃<small>CORRER</small></button><button data-k="j">⬆</button></div>
+      <div><button data-k="l">◀</button><button data-k="d">▶</button></div>
     </div>
+    <div id="ptela"><h1>⏸ Pausado</h1><button id="bc">Continuar</button><button id="br">Recomeçar o jogo</button></div>
     <div id="tela">
+      <svg id="trofeu" viewBox="0 0 120 140" style="display:none">
+        <defs><linearGradient id="ouro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a0"/><stop offset=".5" stop-color="#ffc93a"/><stop offset="1" stop-color="#b8780a"/></linearGradient></defs>
+        <path d="M30 25H12c0 22 10 34 24 38M90 25h18c0 22-10 34-24 38" fill="none" stroke="#e0a010" stroke-width="7" stroke-linecap="round"/>
+        <path d="M30 12h60v33c0 24-14 40-30 42-16-2-30-18-30-42z" fill="url(#ouro)"/>
+        <rect x="53" y="85" width="14" height="24" fill="url(#ouro)"/><path d="M35 124h50l-6-17H41z" fill="url(#ouro)"/>
+        <rect x="28" y="122" width="64" height="13" rx="3" fill="#8a5a08"/>
+        <polygon points="60,26 65,38 78,39 68,47 72,60 60,53 48,60 52,47 42,39 55,38" fill="#fff6c0"/>
+        <path d="M40 20c-2 20 2 34 12 44" stroke="#fff" stroke-opacity=".55" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
       <h1 id="ti">Aventura na Caverna</h1>
-      <p id="tx">Ajude o homem das cavernas a coletar minérios, escapar da lava, dos espinhos e das pedras que caem, e abrir a porta de cada uma das 4 cavernas!</p>
+      <p id="tx">Ajude o homem das cavernas a coletar minérios, escapar da lava, dos espinhos e das pedras que caem, e abrir a porta de cada uma das 16 cavernas! Passe por todas e ganhe um troféu! Pise nos bichos para vencê-los. Se algo te machucar você fica fraco; pegue um diamante para ficar forte de novo.</p>
       <button id="bt">Jogar</button>
-      <small>← → ou A D: andar • Shift: correr • Espaço / ↑ / W: pular • M: som</small>
+      <small>← → ou A D: andar • Shift: correr • Espaço / ↑ / W: pular • P: pausa • M: som</small>
     </div>
   </div>
 </div>
@@ -52,28 +68,46 @@ const luz=document.createElement('canvas');luz.width=VW;luz.height=VH;const lg=l
 
 // cores de cada fase: [fundo topo, fundo base, pedra, pedra clara]
 const PAL=[['#1d1410','#3a2519','#5a4638','#7d6554'],['#12142b','#2a1d4a','#3e3d6b','#6461a0'],
-           ['#0f1f24','#1f3a3f','#3d5558','#68898b'],['#240b0b','#4a1410','#5b3030','#8a4a44']];
-const CRI=['#5ee0ff','#c27bff','#5effc7','#ff9a5e'];   // cor dos cristais decorativos
+           ['#0f1f24','#1f3a3f','#3d5558','#68898b'],['#240b0b','#4a1410','#5b3030','#8a4a44'],
+           ['#0b1c2c','#16415e','#3a6a86','#8fd0e6'],['#0e1f12','#1d4a28','#38603c','#7ab36e'],
+           ['#14091f','#2d1245','#4b2c63','#8a5fb0'],['#1f1a0c','#4a3a14','#6b5a2a','#b59a4e'],
+           ['#2a0a05','#5c1a08','#7a3a1c','#d0703a'],['#0a0a10','#1a1a2e','#2f2f45','#c9a227'],
+           ['#2b0505','#5c0f0f','#7a2020','#ff5a2a'],['#06060c','#12121f','#26263a','#6b6bb0'],
+           ['#1c1a14','#3a362a','#5e5a48','#d8d2b0'],['#1f0a14','#4a1230','#6e2548','#ff6aa0'],
+           ['#000008','#0a0a24','#1c1c50','#7a7aff'],['#1a1204','#4a3206','#7a5a10','#ffd23f']];
+const CRI=['#5ee0ff','#c27bff','#5effc7','#ff9a5e','#9ff0ff','#7bff9a','#d27bff','#ffe27b','#ff8a5e','#ffd23f','#ff7a3a','#8a8aff','#e8e0b0','#ff7ab0','#9a9aff','#ffe45e'];   // cor dos cristais decorativos
 // largura, maior buraco, maior lava, máximo de pedras, minérios necessários
 const NIV=[{n:'Gruta Rasa',w:64,gap:2,pool:3,ped:2,need:5},{n:'Túneis de Cristal',w:80,gap:3,pool:3,ped:4,need:8},
-           {n:'Mina Profunda',w:96,gap:3,pool:4,ped:7,need:11},{n:'Coração de Lava',w:112,gap:3,pool:4,ped:11,need:14}];
+           {n:'Mina Profunda',w:96,gap:3,pool:4,ped:7,need:11},{n:'Coração de Lava',w:112,gap:3,pool:4,ped:11,need:14},
+           {n:'Abismo Gelado',w:120,gap:3,pool:4,ped:12,need:16},{n:'Câmara dos Ecos',w:128,gap:3,pool:4,ped:14,need:18},
+           {n:'Ninho dos Morcegos',w:136,gap:4,pool:5,ped:16,need:20},{n:'Vale das Aranhas',w:144,gap:4,pool:5,ped:18,need:22},
+           {n:'Forja Vulcânica',w:152,gap:4,pool:5,ped:20,need:24},{n:'Trono da Caverna',w:160,gap:4,pool:5,ped:22,need:26},
+           {n:'Rio de Magma',w:168,gap:5,pool:5,ped:24,need:28},{n:'Labirinto Sombrio',w:176,gap:5,pool:5,ped:26,need:30},
+           {n:'Cripta Esquecida',w:184,gap:5,pool:6,ped:28,need:32},{n:'Garganta do Dragão',w:192,gap:5,pool:6,ped:30,need:34},
+           {n:'Câmara do Vazio',w:200,gap:5,pool:6,ped:32,need:36},{n:'Santuário do Troféu',w:208,gap:5,pool:6,ped:34,need:38}];
 
 const H=(a,b)=>{let h=(a*374761393+b*668265263)|0;h=(h^(h>>>13))*1274126177|0;return (h^(h>>>16))>>>0}; // número "aleatório" fixo
 
 // ================== SOM ==================
 let AC,mudo=false,mus=null,passo=0;
 function som(f,d,tipo='square',v=.08,f2){            // toca um beep
-  if(!AC||mudo)return;const t=AC.currentTime,o=AC.createOscillator(),a=AC.createGain();
+  if(!AC||mudo||pausado)return;const t=AC.currentTime,o=AC.createOscillator(),a=AC.createGain();
   o.type=tipo;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
   a.gain.setValueAtTime(v,t);a.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(a);a.connect(AC.destination);o.start();o.stop(t+d)}
-const sfx={pulo:()=>som(260,.18,'square',.06,640),morre:()=>som(320,.7,'sawtooth',.1,40),pedra:()=>som(130,.3,'sawtooth',.09,45),
+const sfx={pulo:()=>{som(300,.16,'square',.1,900);som(150,.2,'triangle',.12,450)},          // pulo
+  pouso:()=>som(110,.12,'sine',.14,50),                                              // aterrissagem
+  dano:()=>{som(500,.35,'sawtooth',.12,90);setTimeout(()=>som(200,.25,'square',.08,70),120)},  // machucou
+  pisa:()=>{som(200,.12,'square',.1,700);setTimeout(()=>som(500,.1,'square',.08,900),70)},     // pisou num bicho
+  diamante:()=>[1047,1319,1568,2093,2637].forEach((f,i)=>setTimeout(()=>som(f,.18,'triangle',.13),i*65)), // diamante
+  cresce:()=>[392,523,659,784].forEach((f,i)=>setTimeout(()=>som(f,.14,'square',.07),i*70)),   // ficou forte
+morre:()=>som(320,.7,'sawtooth',.1,40),pedra:()=>som(130,.3,'sawtooth',.09,45),
   ore:()=>{som(880,.1,'triangle',.1);setTimeout(()=>som(1320,.2,'triangle',.1),70)},
   porta:()=>[400,500,600,800].forEach((f,i)=>setTimeout(()=>som(f,.2,'square',.07),i*90)),
   vence:()=>[523,659,784,1047,784,1047,1319].forEach((f,i)=>setTimeout(()=>som(f,.3,'triangle',.12),i*140)),
   falta:()=>som(160,.2,'square',.07)};
 const mel=[220,0,262,330,294,0,262,220,196,0,247,294,262,0,220,0];     // melodia de aventura (loop)
 const bx=[110,0,110,0,98,0,98,0,87,0,87,0,98,0,98,0];
-function musica(){if(mus)return;mus=setInterval(()=>{if(!AC||mudo)return;const i=passo++%16;
+function musica(){if(mus)return;mus=setInterval(()=>{if(!AC||mudo||pausado)return;const i=passo++%16;
   if(mel[i])som(mel[i],.22,'triangle',.05);if(bx[i])som(bx[i],.4,'sine',.1);if(i%4==2)som(70,.12,'sine',.12,35);},220)}
 document.getElementById('som').onclick=()=>{mudo=!mudo;document.getElementById('som').textContent=mudo?'🔇':'🔊'};
 
@@ -84,13 +118,13 @@ function gerar(k){
   for(let x=0;x<W;x++){R[0][x]=R[1][x]=R[12][x]=R[13][x]='#'}      // teto e chão
   for(let y=0;y<14;y++)R[y][0]=R[y][W-1]='#';                         // paredes
   let ores=0;const rocks=[],tochas=[],deco=[];
-  const ore=(c,r)=>{R[r][c]=rnd()<.12+k*.06?'d':rnd()<.5?'g':'c';ores++};   // d=diamante g=ouro c=cristal
-  const sp=()=>ri(6-k,8-k);let x=8;
+  const ore=(c,r)=>{R[r][c]=rnd()<Math.min(.4,.12+k*.06)?'d':rnd()<.5?'g':'c';ores++};   // d=diamante g=ouro c=cristal
+  const sp=()=>ri(Math.max(3,6-k),Math.max(5,8-k));let x=8;
   while(x<W-10){                                                       // coloca obstáculos ao longo da caverna
     const r=rnd();
     if(r<.18){const w=ri(2,L.gap);for(let i=0;i<w;i++)R[12][x+i]=R[13][x+i]='.';ore(x+(w>>1),9);x+=w+sp()}          // buraco
     else if(r<.36){const w=ri(2,L.pool);for(let i=0;i<w;i++)R[12][x+i]='L';ore(x+(w>>1),9);x+=w+sp()}              // lava
-    else if(r<.52){const w=ri(1,2+(k>1?1:0));for(let i=0;i<w;i++)R[11][x+i]='^';if(rnd()<.6)ore(x,9);x+=w+sp()}    // espinhos
+    else if(r<.52){const w=ri(1,2+(k>1?1:0)+(k>5?1:0)+(k>10?1:0));for(let i=0;i<w;i++)R[11][x+i]='^';if(rnd()<.6)ore(x,9);x+=w+sp()}    // espinhos
     else if(r<.72){const w=ri(3,4);for(let i=0;i<w;i++)R[9][x+i]='#';ore(x+1,8);if(rnd()<.5)ore(x+2,8);x+=w+ri(2,4)} // plataforma
     else if(rocks.length<L.ped){rocks.push(x);x+=ri(4,6)}                                                          // pedra que cai
     else{R[11][x]='^';x+=sp()}
@@ -99,16 +133,24 @@ function gerar(k){
   for(let c=10;c<W-10;c+=ri(5,9)){if(R[11][c]=='.'&&R[12][c]=='#'&&rnd()<.6)ore(c,11)}                            // minérios no chão
   for(let c=5;c<W-3;c+=ri(7,10))tochas.push({x:c*T+16,y:ri(4,6)*T});                                              // tochas
   for(let i=0;i<W/5;i++){const c=ri(2,W-3);if(R[11][c]=='.'&&R[12][c]=='#')deco.push({c,t:i%3})}                  // cristais de enfeite
-  return{R,W,rocks,tochas,deco,need:L.need}
+  // animais da caverna: cobras andam no chão, morcegos voam e aranhas descem do teto
+  const inim=[],usado={},ok=c=>R[12][c]=='#'&&R[11][c]=='.'&&R[10][c]=='.'&&!usado[c];
+  for(let n=0;n<[1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9][k];n++)for(let t2=0;t2<300;t2++){const c=ri(14,W-18);let b=true;for(let i=0;i<7;i++)if(!ok(c+i))b=false;
+    if(b){for(let i=0;i<7;i++)usado[c+i]=1;inim.push({t:'c',x:c*T,y:12*T-18,w:30,h:18,x0:c*T,x1:(c+7)*T-30,dir:1,v:Math.min(3.1,.9+k*.15),vivo:true});break}}
+  for(let n=0;n<[0,1,2,3,3,4,4,5,5,6,6,7,7,8,8,9][k];n++)for(let t2=0;t2<300;t2++){const c=ri(14,W-12);let b=R[12][c]=='#'&&!usado[c]&&!rocks.some(q=>Math.abs(q-c)<2);
+    for(let r=2;r<12;r++)if(R[r][c]!='.')b=false;
+    if(b&&!inim.some(e=>e.t=='a'&&Math.abs(e.x/T-c)<4)){usado[c]=1;inim.push({t:'a',x:c*T+7,y:100,w:18,h:16,ph:rnd()*6,vivo:true});break}}
+  for(let n=0;n<[1,1,2,3,3,4,4,5,5,6,6,7,7,8,8,9][k];n++){const x0=ri(16,W-26)*T;inim.push({t:'m',x:x0,y:0,w:26,h:16,x0,x1:x0+9*T,base:ri(6,8)*T,dir:1,v:Math.min(4.2,1.4+k*.25),ph:rnd()*6,vivo:true})}
+  return{R,W,rocks,tochas,deco,need:L.need,inim}
 }
 
 // ================== ESTADO DO JOGO ==================
-let est='menu',niv=0,vidas=3,pts=0,ptsIni=0,minerios=0,need=0,W=0,mapa,P,pedras=[],parts=[],tochas=[],deco=[];
+let pausado=false,est='menu',niv=0,vidas=3,pts=0,ptsIni=0,minerios=0,need=0,W=0,mapa,P,pedras=[],parts=[],tochas=[],deco=[],inim=[];
 let cam=0,camx=0,shake=0,tempo=0,aviso=0,msg='',msgT=0,jAnt=false;
 function carregar(k){                                                  // monta uma fase
-  niv=k;const m=gerar(k);mapa=m.R;W=m.W;need=m.need;tochas=m.tochas;deco=m.deco;
+  niv=k;const m=gerar(k);mapa=m.R;W=m.W;need=m.need;tochas=m.tochas;deco=m.deco;inim=m.inim;
   pedras=m.rocks.map(c=>({x:c*T+4,y:2*T,vy:0,e:0,t:0}));               // e: 0 parada,1 tremendo,2 caindo,3 quebrada
-  P={x:2*T,y:10*T,vx:0,vy:0,w:22,h:40,solo:false,dir:1,anim:0,coy:0,buf:0};
+  P={x:2*T,y:10*T,vx:0,vy:0,w:22,h:40,solo:false,dir:1,anim:0,coy:0,buf:0,pw:2,inv:0,kb:0,cres:0};
   minerios=0;pts=ptsIni;parts=[];cam=0;aviso=170;msgT=0}
 const sol=(c,r)=>r<0||c<0||c>=W?true:r>=14?false:mapa[r][c]=='#';
 function bate(o){const c0=Math.floor(o.x/T),c1=Math.floor((o.x+o.w-.01)/T),r0=Math.floor(o.y/T),r1=Math.floor((o.y+o.h-.01)/T);
@@ -120,7 +162,8 @@ function burst(x,y,col,n=10){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random
 const K={},TC={};
 addEventListener('keydown',e=>{K[e.code]=1;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(e.code=='KeyM')document.getElementById('som').click();
-  if((e.code=='Enter'||e.code=='Space')&&tela.style.display!='none')bt.click()});
+  if((e.code=='Enter'||e.code=='Space')&&!e.repeat&&tela.style.display!='none')bt.click();
+  if(e.code=='Enter'&&pausado)pausar(false);if(e.code=='KeyP'||e.code=='Escape')pausar()});
 addEventListener('keyup',e=>K[e.code]=0);
 document.querySelectorAll('#ctl button').forEach(b=>{const k=b.dataset.k;
   if(k=='r'){b.onpointerdown=e=>{e.preventDefault();TC.r=!TC.r;b.classList.toggle('on',TC.r)};return}   // correr liga/desliga
@@ -131,15 +174,27 @@ const esq=()=>K.ArrowLeft||K.KeyA||TC.l,dirk=()=>K.ArrowRight||K.KeyD||TC.d,pulo
 
 // ================== TELAS ==================
 const tela=document.getElementById('tela'),bt=document.getElementById('bt');
-function mostrar(t,x,b){document.getElementById('ti').textContent=t;document.getElementById('tx').textContent=x;bt.textContent=b;tela.style.display='flex'}
+const ptela=document.getElementById('ptela');                       // pausa: P, Esc ou botão ⏸
+function pausar(v){if(v===undefined)v=!pausado;if(v&&est!='jogo')return;pausado=v;ptela.style.display=v?'flex':'none';document.getElementById('pausa').textContent=v?'▶':'⏸'}
+document.getElementById('pausa').onclick=()=>pausar();document.getElementById('bc').onclick=()=>pausar(false);
+document.getElementById('br').onclick=()=>{pausar(false);bt.click()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pausar(true)});
+function mostrar(t,x,b,tr){document.getElementById('trofeu').style.display=tr?'block':'none';document.getElementById('ti').textContent=t;document.getElementById('tx').textContent=x;bt.textContent=b;tela.style.display='flex'}
 bt.onclick=()=>{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();AC.resume();musica();   // começa o jogo
-  vidas=3;pts=0;ptsIni=0;carregar(0);est='jogo';tela.style.display='none'};
+  pausar(false);vidas=3;pts=0;ptsIni=0;carregar(0);est='jogo';tela.style.display='none'};
 function morrer(){if(est!='jogo')return;est='morte';vidas--;sfx.morre();shake=16;
   burst(P.x+11,P.y+20,'#e0a070',18);burst(P.x+11,P.y+20,'#ff4a2a',10);
   setTimeout(()=>{if(vidas<=0){est='fim';mostrar('Fim de jogo','Você fez '+pts+' pontos. A caverna venceu desta vez!','Recomeçar')}
     else{carregar(niv);est='jogo'}},950)}
+function dano(){const p=P;if(p.inv>0||est!='jogo')return;     // forte vira fraco; fraco morre
+  if(p.pw>1){p.pw=1;p.y+=8;p.h=32;p.inv=130;p.vy=-7;p.vx=-p.dir*4;p.kb=12;p.cres=0;sfx.dano();shake=8;burst(p.x+11,p.y+16,'#ff4a2a',14);
+    msg='Ai! Pegue um diamante para ficar forte de novo!';msgT=150}
+  else morrer()}
+function crescer(){const p=P;p.y-=8;p.h=40;                               // volta a ficar forte (se tiver espaço)
+  if(bate(p)){p.y+=8;p.h=32;p.cres=1;return}
+  p.pw=2;p.cres=0;p.inv=60;sfx.cresce();msg='Você ficou forte de novo!';msgT=90}
 function passar(){est='troca';sfx.porta();pts+=50+vidas*25;vidas=Math.min(3,vidas+1);
-  setTimeout(()=>{if(niv+1>=NIV.length){est='fim';sfx.vence();mostrar('🏆 Vitória!','Você explorou as 4 cavernas e escapou com '+pts+' pontos! Você é o rei da caverna!','Jogar de novo')}
+  setTimeout(()=>{if(niv+1>=NIV.length){est='fim';sfx.vence();mostrar('Campeão da Caverna!','Você venceu as '+NIV.length+' cavernas e escapou com '+pts+' pontos. Aqui está o seu troféu!','Jogar de novo',true)}
     else{ptsIni=pts;carregar(niv+1);est='jogo'}},900)}
 
 // ================== ATUALIZAÇÃO (a cada quadro) ==================
@@ -148,35 +203,43 @@ function atualizar(){
   for(const q of parts){q.x+=q.vx;q.y+=q.vy;q.vy+=.2;q.l--}parts=parts.filter(q=>q.l>0);
   if(est=='morte'||est=='troca'||est=='jogo'){for(const p of pedras)pedraUpd(p)}
   if(est!='jogo')return;
-  const p=P,ax=(dirk()?1:0)-(esq()?1:0);
+  const p=P,ax=p.kb>0?0:(dirk()?1:0)-(esq()?1:0);
+  if(p.inv>0)p.inv--;if(p.cres)crescer();
   // andar / correr
-  p.vx+=(ax*(corre()?4.6:2.7)-p.vx)*(p.solo?.3:.14);if(!ax&&Math.abs(p.vx)<.1)p.vx=0;if(ax)p.dir=ax;
+  if(p.kb>0)p.kb--;else{p.vx+=(ax*(corre()?5.2:3)-p.vx)*(p.solo?.3:.14);if(!ax&&Math.abs(p.vx)<.1)p.vx=0}if(ax)p.dir=ax;
   // pulo (com folga de tempo para ficar mais fácil)
   const j=pulo();if(j&&!jAnt)p.buf=8;jAnt=j;p.buf--;p.coy=p.solo?7:p.coy-1;
   if(p.buf>0&&p.coy>0){p.vy=-11.3;p.buf=0;p.coy=0;p.solo=false;sfx.pulo();burst(p.x+11,p.y+40,'#aa9',4)}
   if(!j&&p.vy<-4)p.vy=-4;                                   // soltar o botão = pulo curto
   p.vy=Math.min(p.vy+.55,13);                               // gravidade
   p.x+=p.vx;if(bate(p)){const s=Math.sign(p.vx)||1;while(bate(p))p.x-=s*.5;p.vx=0}   // colisão horizontal
-  p.solo=false;p.y+=p.vy;if(bate(p)){const s=Math.sign(p.vy)||1;while(bate(p))p.y-=s*.5;if(p.vy>0)p.solo=true;p.vy=0} // colisão vertical
+  p.solo=false;const vq=p.vy;p.y+=p.vy;if(bate(p)){const s=Math.sign(p.vy)||1;while(bate(p))p.y-=s*.5;if(p.vy>0){p.solo=true;if(vq>6){sfx.pouso();burst(p.x+11,p.y+p.h,'#aa9',5)}}p.vy=0} // colisão vertical
   p.anim+=Math.abs(p.vx)*.09;
   if(p.y>VH+60)return morrer();
   // tocar em lava, espinhos e minérios
   const c0=Math.floor(p.x/T),c1=Math.floor((p.x+p.w)/T),r0=Math.floor(p.y/T),r1=Math.floor((p.y+p.h)/T);
   for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){const ch=mapa[r]&&mapa[r][c];if(!ch)continue;
     if(ch=='L'&&p.y+p.h>r*T+10)return morrer();
-    if(ch=='^'&&p.y+p.h>r*T+16&&p.x+p.w-4>c*T+3&&p.x+4<c*T+T-3)return morrer();
+    if(ch=='^'&&p.y+p.h>r*T+16&&p.x+p.w-4>c*T+3&&p.x+4<c*T+T-3){dano();if(est!='jogo')return}
     if(ch=='g'||ch=='d'||ch=='c'){if(choca({x:p.x,y:p.y,w:p.w,h:p.h},{x:c*T+6,y:r*T+6,w:T-12,h:T-12})){
-      mapa[r][c]='.';minerios++;pts+=ch=='d'?30:ch=='c'?15:10;sfx.ore();
+      mapa[r][c]='.';minerios++;pts+=ch=='d'?30:ch=='c'?15:10;sfx[ch=='d'?'diamante':'ore']();if(ch=='d'&&p.pw<2)p.cres=1;
       burst(c*T+16,r*T+16,ch=='d'?'#6ee7ff':ch=='c'?'#e07bff':'#ffd23f',12)}}}
+  for(const e of inim){if(!e.vivo)continue;
+    if(e.t=='c'){e.x+=e.dir*e.v;if(e.x>e.x1||e.x<e.x0)e.dir*=-1}
+    else if(e.t=='m'){e.x+=e.dir*e.v;if(e.x>e.x1||e.x<e.x0)e.dir*=-1;e.y=e.base+Math.sin(tempo/18+e.ph)*34}
+    else e.y=90+(Math.sin(tempo/50+e.ph)+1)/2*246;
+    if(choca({x:p.x+3,y:p.y+3,w:p.w-6,h:p.h-3},e)){
+      if(e.t!='a'&&p.vy>0&&p.y+p.h-p.vy<=e.y+8){e.vivo=false;p.vy=pulo()?-10.5:-7.5;p.solo=false;pts+=e.t=='c'?20:30;sfx.pisa();burst(e.x+e.w/2,e.y+e.h/2,e.t=='c'?'#7ed957':'#b07be0',14)}
+      else{dano();if(est!='jogo')return}}}
   // pedras que caem acertam o jogador?
-  for(const q of pedras)if(q.e==2&&choca({x:p.x+3,y:p.y+3,w:p.w-6,h:p.h-3},{x:q.x,y:q.y,w:24,h:26}))return morrer();
+  for(const q of pedras)if(q.e==2&&choca({x:p.x+3,y:p.y+3,w:p.w-6,h:p.h-3},{x:q.x,y:q.y,w:24,h:26})){q.e=3;burst(q.x+12,q.y+13,'#9a8f88',10);dano();if(est!='jogo')return}
   // porta de saída
   if(choca(p,{x:(W-4)*T-4,y:10*T,w:44,h:2*T})){
     if(minerios>=need)passar();else if(msgT<20){msg='Faltam '+(need-minerios)+' minérios para abrir a porta!';msgT=90;sfx.falta()}}
   cam+=((p.x-VW/2+60*p.dir)-cam)*.1;cam=Math.max(0,Math.min(W*T-VW,cam));camx=Math.floor(cam);
 }
 function pedraUpd(q){
-  if(q.e==0&&P&&Math.abs(P.x-q.x)<150&&est=='jogo'){q.e=1;q.t=60-niv*10}
+  if(q.e==0&&P&&Math.abs(P.x-q.x)<150+Math.max(0,niv-9)*12&&est=='jogo'){q.e=1;q.t=Math.max(14,60-niv*6)}
   else if(q.e==1){q.t--;if(q.t%6==0)parts.push({x:q.x+12,y:q.y+26,vx:0,vy:1,l:20,c:'#bbb',s:2});if(q.t<=0)q.e=2}
   else if(q.e==2){q.vy=Math.min(q.vy+.5,11);q.y+=q.vy;
     if(sol(Math.floor((q.x+12)/T),Math.floor((q.y+26)/T))||q.y>VH){q.e=3;sfx.pedra();shake=8;burst(q.x+12,q.y+24,'#9a8f88',12)}}
@@ -218,14 +281,27 @@ function pedraCai(q){const x=q.x-camx;let ox=q.e==1?(Math.random()-.5)*3:0;if(q.
   g.fillStyle='#8d8580';g.beginPath();g.moveTo(x+ox,q.y+10);g.lineTo(x+6+ox,q.y);g.lineTo(x+18+ox,q.y+2);g.lineTo(x+25+ox,q.y+12);g.lineTo(x+18+ox,q.y+26);g.lineTo(x+5+ox,q.y+24);g.fill();
   g.fillStyle='#6a625e';g.beginPath();g.moveTo(x+25+ox,q.y+12);g.lineTo(x+18+ox,q.y+26);g.lineTo(x+12+ox,q.y+24);g.lineTo(x+16+ox,q.y+10);g.fill();
   g.strokeStyle='#3d3835';g.lineWidth=1;g.beginPath();g.moveTo(x+9+ox,q.y+6);g.lineTo(x+13+ox,q.y+14);g.lineTo(x+10+ox,q.y+20);g.stroke()}
+function cobra(e){g.save();g.translate(e.x-camx+15,e.y);g.scale(e.dir,1);g.lineCap='round';g.lineJoin='round';
+  g.strokeStyle='#2f7a2f';g.lineWidth=9;g.beginPath();for(let i=0;i<=7;i++){const px=-14+i*3.6,py=11+Math.sin(tempo/4+i*.9)*3;i?g.lineTo(px,py):g.moveTo(px,py)}g.stroke();
+  g.strokeStyle='#7ed957';g.lineWidth=3;g.stroke();
+  g.fillStyle='#2f7a2f';g.beginPath();g.ellipse(14,7,7,6,0,0,7);g.fill();g.fillStyle='#ffe14a';g.fillRect(15,4,3,3);g.fillStyle='#000';g.fillRect(17,5,1.5,2);
+  g.strokeStyle='#e0203a';g.lineWidth=1.5;g.beginPath();g.moveTo(20,8);g.lineTo(25,8+Math.sin(tempo/3)*2);g.stroke();g.restore()}
+function morcego(e){const f=Math.sin(tempo/3+e.ph)*9;g.save();g.translate(e.x-camx+13,e.y+8);g.scale(e.dir,1);
+  g.fillStyle='#3a2450';for(const s of[-1,1]){g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(12*s,-14-f,24*s,-2+f*.4);g.quadraticCurveTo(16*s,2,12*s,-1);g.quadraticCurveTo(8*s,5,0,4);g.fill()}
+  g.fillStyle='#24142f';g.beginPath();g.ellipse(0,2,6,7,0,0,7);g.fill();tri(-5,-3,-4,-10,-1,-4,'#24142f');tri(1,-4,4,-10,5,-3,'#24142f');
+  g.fillStyle='#ff3030';g.fillRect(-4,0,2.5,2.5);g.fillRect(1.5,0,2.5,2.5);g.restore()}
+function aranha(e){const x=e.x-camx+9,y=e.y+8;g.strokeStyle='rgba(220,220,220,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x,2*T);g.lineTo(x,y);g.stroke();
+  g.strokeStyle='#111';g.lineWidth=2;for(let i=0;i<4;i++){const o=Math.sin(tempo/6+i)*2;g.beginPath();g.moveTo(x,y);g.lineTo(x-9,y-6+i*4+o);g.lineTo(x-13,y+2+i*4);g.moveTo(x,y);g.lineTo(x+9,y-6+i*4-o);g.lineTo(x+13,y+2+i*4);g.stroke()}
+  g.fillStyle='#1a1a22';g.beginPath();g.ellipse(x,y+1,8,9,0,0,7);g.fill();g.fillStyle='#7a1fa0';g.beginPath();g.ellipse(x,y+3,3,4,0,0,7);g.fill();
+  g.fillStyle='#f33';g.fillRect(x-4,y-5,2,2);g.fillRect(x+2,y-5,2,2)}
 function porta(){const x=(W-4)*T-camx-2,y=10*T,ab=minerios>=need;
   g.fillStyle='#2a2320';g.fillRect(x-6,y-8,56,72);g.fillStyle='#4a403b';g.fillRect(x-3,y-5,50,69);
   g.fillStyle=ab?'#ffe27a':'#1a0f0a';g.beginPath();g.moveTo(x+2,y+64);g.lineTo(x+2,y+14);g.arc(x+22,y+14,20,Math.PI,0);g.lineTo(x+42,y+64);g.fill();
   if(ab){g.globalCompositeOperation='lighter';g.fillStyle='rgba(255,220,100,.25)';for(let i=0;i<4;i++){g.beginPath();g.moveTo(x+22,y+30);g.lineTo(x+22+Math.cos(tempo/30+i*1.6)*60,y+30+Math.sin(tempo/30+i*1.6)*60);g.lineTo(x+22+Math.cos(tempo/30+i*1.6+.3)*60,y+30+Math.sin(tempo/30+i*1.6+.3)*60);g.fill()}g.globalCompositeOperation='source-over'}
   else{g.fillStyle='#7a2a1a';g.fillRect(x+8,y+14,28,34);g.fillStyle='#c0392b';g.fillRect(x+10,y+16,24,30);g.fillStyle='#ffd23f';g.beginPath();g.arc(x+22,y+28,5,0,7);g.fill();g.fillRect(x+20,y+30,4,10)}
   txt(minerios+'/'+need,x+22,y-14,16,'center',ab?'#ffe27a':'#ff9a8a')}
-function homem(){const p=P,ar=!p.solo,sw=Math.sin(p.anim),mv=Math.abs(p.vx)>.3;
-  g.save();g.translate(Math.round(p.x+p.w/2-camx),Math.round(p.y+p.h));g.scale(p.dir,1);g.lineCap='round';g.lineJoin='round';
+function homem(){if(P.inv>0&&Math.floor(P.inv/4)%2)return;const p=P,ar=!p.solo,sw=Math.sin(p.anim),mv=Math.abs(p.vx)>.3;
+  g.save();g.translate(Math.round(p.x+p.w/2-camx),Math.round(p.y+p.h));g.scale(p.dir*p.h/40,p.h/40);g.lineCap='round';g.lineJoin='round';
   const l1=ar?-5:mv?sw*9:0,l2=ar?7:mv?-sw*9:0;
   g.strokeStyle='#c98a5a';g.lineWidth=6;g.beginPath();g.moveTo(-3,-14);g.lineTo(-3+l1,-3);g.stroke();g.beginPath();g.moveTo(3,-14);g.lineTo(3+l2,-3);g.stroke();   // pernas
   g.fillStyle='#6b4423';g.fillRect(-3+l1-3,-5,9,5);g.fillRect(3+l2-3,-5,9,5);                                                                                      // pés
@@ -256,6 +332,7 @@ function desenhar(){
     else if(ch=='g'||ch=='d'||ch=='c'){minerio(ch,x,y,c);lights.push([x+16,y+16,46,.55])}
     else if(r==2&&H(c,7)%3==0)tri(x+6,y,x+26,y,x+16,y+14+H(c,8)%24,pal[2])}               // estalactites
   porta();for(const q of pedras)pedraCai(q);
+  for(const e of inim)if(e.vivo){if(e.t=='c')cobra(e);else if(e.t=='m')morcego(e);else aranha(e)}
   if(est!='morte')homem();
   for(const q of parts){g.globalAlpha=Math.min(1,q.l/25);g.fillStyle=q.c;g.fillRect(q.x-camx,q.y,q.s,q.s)}g.globalAlpha=1;
   // brilho quente das tochas
@@ -264,23 +341,24 @@ function desenhar(){
     q.addColorStop(0,'rgba(255,150,50,.3)');q.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=q;g.fillRect(x-200,t.y-200,400,400);lights.push([x,t.y-8,175+f,.95])}
   g.globalCompositeOperation='source-over';
   // iluminação: escuridão com buracos de luz
-  lg.globalCompositeOperation='source-over';lg.clearRect(0,0,VW,VH);lg.fillStyle='rgba(6,3,12,.84)';lg.fillRect(0,0,VW,VH);lg.globalCompositeOperation='destination-out';
+  lg.globalCompositeOperation='source-over';lg.clearRect(0,0,VW,VH);lg.fillStyle='rgba(6,3,12,'+Math.min(.93,.82+niv*.008)+')';lg.fillRect(0,0,VW,VH);lg.globalCompositeOperation='destination-out';
   const L=(x,y,r,a)=>{const q=lg.createRadialGradient(x,y,r*.1,x,y,r);q.addColorStop(0,`rgba(0,0,0,${a})`);q.addColorStop(1,'rgba(0,0,0,0)');lg.fillStyle=q;lg.beginPath();lg.arc(x,y,r,0,7);lg.fill()};
   L(P.x+11-camx,P.y+18,155,1);L((W-4)*T-camx+22,11*T,minerios>=need?130:70,.9);for(const l of lights)L(...l);
   g.drawImage(luz,0,0);
   // ===== painel (HUD) =====
   g.fillStyle='rgba(0,0,0,.45)';g.fillRect(0,0,VW,34);
   txt('♥'.repeat(Math.max(0,vidas)),10,26,24,'left','#ff4d5a');
+  txt(P.pw>1?'💪 FORTE':'⚠ FRACO',100,24,15,'left',P.pw>1?'#9be37a':'#ffb347');
   txt('Fase '+(niv+1)+' – '+NIV[niv].n,VW/2,24,18,'center','#ffe9b0');
   txt('💎 '+minerios+'/'+need,VW-150,24,18,'right','#9af0ff');txt('★ '+pts,VW-12,24,18,'right','#ffd23f');
-  if(aviso>0){g.globalAlpha=Math.min(1,aviso/40);txt('FASE '+(niv+1),VW/2,170,44,'center','#ffcf4a');txt(NIV[niv].n,VW/2,205,26,'center','#fff');
+  if(aviso>0){g.globalAlpha=Math.min(1,aviso/40);txt(niv==NIV.length-1?'ÚLTIMA CAVERNA!':'FASE '+(niv+1),VW/2,170,44,'center','#ffcf4a');txt(NIV[niv].n,VW/2,205,26,'center','#fff');
     txt('Colete '+need+' minérios e chegue à porta!',VW/2,240,18,'center','#9af0ff');g.globalAlpha=1}
   if(msgT>0)txt(msg,VW/2,110,20,'center','#ff9a8a');
   g.restore()}
 
 // ================== LOOP PRINCIPAL ==================
 let ult=0,acc=0;
-function loop(t){acc+=Math.min(t-ult,100);ult=t;while(acc>=16.67){atualizar();acc-=16.67}desenhar();requestAnimationFrame(loop)}
+function loop(t){acc+=Math.min(t-ult,100);ult=t;while(acc>=16.67){if(!pausado)atualizar();acc-=16.67}desenhar();requestAnimationFrame(loop)}
 function ajustar(){const s=Math.min(innerWidth/VW,innerHeight/VH);
   const b=document.getElementById('box');b.style.width=Math.floor(VW*s)+'px';b.style.fontSize=Math.max(9,18*s)+'px'}
 addEventListener('resize',ajustar);ajustar();
