@@ -21,6 +21,15 @@ button{font-family:inherit;cursor:pointer}
 #som,#pausa{position:absolute;left:8px;top:40px;background:rgba(0,0,0,.55);border:1px solid #fff7;color:#fff;border-radius:8px;font-size:20px;padding:3px 10px;z-index:6}
 #pausa{left:62px}
 #ptela{display:none;z-index:5}
+#xtela{position:absolute;inset:0;z-index:8;background:rgba(10,5,15,.96);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.4;padding:1em}
+#xtela h2{margin:0 0 .3em;color:#6ee7ff;font-size:1.8em}
+#xtela p{margin:.25em 0;max-width:30em;font-size:1em}
+#pixk{font-size:1.5em;font-weight:bold;color:#ffe27a;background:#0008;border:1px dashed #ffe27a88;border-radius:.4em;padding:.15em .7em;margin:.3em 0;user-select:text}
+#cod{font-family:inherit;font-size:1.1em;padding:.3em .6em;border-radius:.4em;border:1px solid #fff6;background:#000a;color:#fff;text-align:center;text-transform:uppercase;width:11em;user-select:text;-webkit-user-select:text}
+#brev,#bpix,#bpix2,#bcop,#bres,#bfx{font-size:1em;padding:.35em 1.1em;margin-top:.6em;border-radius:.5em;border:1px solid #fff6;background:#ffffff1f;color:#fff}
+#brev{display:none;font-size:1.2em;background:linear-gradient(#3fd0f0,#1a7aa8);border:0;font-weight:bold}
+#brev:disabled{opacity:.5;cursor:default}
+#xmsg{min-height:1.4em;color:#9be37a}
 #br{margin-top:.8em;font-size:1em;padding:.3em 1em;border-radius:.5em;border:1px solid #fff6;background:transparent;color:#fff}
 #ctl{display:none;position:absolute;left:0;right:0;bottom:0;justify-content:space-between;align-items:flex-end;box-sizing:border-box;padding:10px 14px;pointer-events:none;line-height:1}
 #ctl div{display:flex;align-items:flex-end;gap:10px}
@@ -41,7 +50,14 @@ button{font-family:inherit;cursor:pointer}
       <div><button data-k="r" title="Correr mais rápido">🏃<small>CORRER</small></button><button data-k="j">⬆</button></div>
       <div><button data-k="l">◀</button><button data-k="d">▶</button></div>
     </div>
-    <div id="ptela"><h1>⏸ Pausado</h1><button id="bc">Continuar</button><button id="br">Recomeçar o jogo</button></div>
+    <div id="ptela"><h1>⏸ Pausado</h1><button id="bc">Continuar</button><button id="br">Recomeçar o jogo</button><button id="bpix2">💎 Comprar diamantes (PIX)</button></div>
+    <div id="xtela"><h2>💎 Comprar diamantes</h2>
+      <p><b>R$ 1,00 = 50 💎</b> (50 diamantes revivem você uma vez)</p>
+      <p>Faça um PIX para a chave (celular):</p>
+      <div id="pixk">27 99656-7197</div><button id="bcop">Copiar chave</button>
+      <p style="margin-top:.8em">Depois de pagar, envie o comprovante ao dono do jogo para receber seu código e digite abaixo:</p>
+      <input id="cod" maxlength="20" placeholder="CÓDIGO" autocomplete="off"><button id="bres">Resgatar 50 💎</button>
+      <div id="xmsg"></div><button id="bfx">Voltar</button></div>
     <div id="tela">
       <svg id="trofeu" viewBox="0 0 120 140" style="display:none">
         <defs><linearGradient id="ouro" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a0"/><stop offset=".5" stop-color="#ffc93a"/><stop offset="1" stop-color="#b8780a"/></linearGradient></defs>
@@ -55,6 +71,8 @@ button{font-family:inherit;cursor:pointer}
       <h1 id="ti">Aventura na Caverna</h1>
       <p id="tx">Ajude o homem das cavernas a coletar minérios, escapar da lava, dos espinhos e das pedras que caem, e abrir a porta de cada uma das 16 cavernas! Passe por todas e ganhe um troféu! Pise nos bichos para vencê-los. Se algo te machucar você fica fraco; pegue um diamante para ficar forte de novo.</p>
       <button id="bt">Jogar</button>
+      <button id="brev">💎 Reviver</button>
+      <button id="bpix">💎 Comprar diamantes (PIX)</button>
       <small>← → ou A D: andar • Shift: correr • Espaço / ↑ / W: pular • P: pausa • M: som</small>
     </div>
   </div>
@@ -146,6 +164,9 @@ function gerar(k){
 
 // ================== ESTADO DO JOGO ==================
 let pausado=false,est='menu',niv=0,vidas=3,pts=0,ptsIni=0,minerios=0,need=0,W=0,mapa,P,pedras=[],parts=[],tochas=[],deco=[],inim=[];
+let diam=0;const CODIGOS=['CAVE-7K2M','CAVE-9XQ4','CAVE-3LP8','CAVE-5RW1','CAVE-8TN6','CAVE-2VH9','CAVE-6DZ3','CAVE-4BY7','CAVE-1GS5','CAVE-0AJ8']; // códigos de resgate (1 uso cada) - troque por outros se quiser
+const lerLS=k=>{try{return localStorage.getItem(k)}catch(e){return null}},gravaLS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+diam=parseInt(lerLS('cav_diam'))||0;const salvarDiam=()=>gravaLS('cav_diam',diam);
 let cam=0,camx=0,shake=0,tempo=0,aviso=0,msg='',msgT=0,jAnt=false;
 function carregar(k){                                                  // monta uma fase
   niv=k;const m=gerar(k);mapa=m.R;W=m.W;need=m.need;tochas=m.tochas;deco=m.deco;inim=m.inim;
@@ -160,9 +181,9 @@ function burst(x,y,col,n=10){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.random
 
 // ================== TECLADO E TOQUE ==================
 const K={},TC={};
-addEventListener('keydown',e=>{K[e.code]=1;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+addEventListener('keydown',e=>{if(e.target&&e.target.tagName=='INPUT')return;K[e.code]=1;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   if(e.code=='KeyM')document.getElementById('som').click();
-  if((e.code=='Enter'||e.code=='Space')&&!e.repeat&&tela.style.display!='none')bt.click();
+  if((e.code=='Enter'||e.code=='Space')&&!e.repeat&&tela.style.display!='none'&&xtela.style.display!='flex')bt.click();
   if(e.code=='Enter'&&pausado)pausar(false);if(e.code=='KeyP'||e.code=='Escape')pausar()});
 addEventListener('keyup',e=>K[e.code]=0);
 document.querySelectorAll('#ctl button').forEach(b=>{const k=b.dataset.k;
@@ -179,12 +200,23 @@ function pausar(v){if(v===undefined)v=!pausado;if(v&&est!='jogo')return;pausado=
 document.getElementById('pausa').onclick=()=>pausar();document.getElementById('bc').onclick=()=>pausar(false);
 document.getElementById('br').onclick=()=>{pausar(false);bt.click()};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pausar(true)});
-function mostrar(t,x,b,tr){document.getElementById('trofeu').style.display=tr?'block':'none';document.getElementById('ti').textContent=t;document.getElementById('tx').textContent=x;bt.textContent=b;tela.style.display='flex'}
+function mostrar(t,x,b,tr){document.getElementById('trofeu').style.display=tr?'block':'none';document.getElementById('ti').textContent=t;document.getElementById('tx').textContent=x;bt.textContent=b;brev.style.display='none';tela.style.display='flex'}
 bt.onclick=()=>{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();AC.resume();musica();   // começa o jogo
   pausar(false);vidas=3;pts=0;ptsIni=0;carregar(0);est='jogo';tela.style.display='none'};
+const brev=document.getElementById('brev'),xtela=document.getElementById('xtela'),xmsg=document.getElementById('xmsg'),cod=document.getElementById('cod');
+function revBtn(){brev.style.display='inline-block';brev.textContent='💎 Reviver ('+diam+'/50)';brev.disabled=diam<50}
+brev.onclick=()=>{if(diam<50)return;diam-=50;salvarDiam();vidas=3;carregar(niv);est='jogo';tela.style.display='none'};
+const abrirLoja=()=>{xmsg.textContent='';cod.value='';xtela.style.display='flex'};
+document.getElementById('bpix').onclick=abrirLoja;document.getElementById('bpix2').onclick=abrirLoja;
+document.getElementById('bfx').onclick=()=>{xtela.style.display='none';if(tela.style.display!='none'&&brev.style.display!='none')revBtn()};
+document.getElementById('bcop').onclick=()=>{const k='+5527996567197';(navigator.clipboard?navigator.clipboard.writeText(k):Promise.reject()).then(()=>xmsg.textContent='Chave copiada!').catch(()=>xmsg.textContent='Copie a chave manualmente: 27 99656-7197')};
+document.getElementById('bres').onclick=()=>{const c=cod.value.trim().toUpperCase();let usados=[];try{usados=JSON.parse(lerLS('cav_usados')||'[]')}catch(e){}
+  if(!CODIGOS.includes(c))xmsg.style.color='#ff9a8a',xmsg.textContent='Código inválido.';
+  else if(usados.includes(c))xmsg.style.color='#ff9a8a',xmsg.textContent='Esse código já foi usado.';
+  else{usados.push(c);gravaLS('cav_usados',JSON.stringify(usados));diam+=50;salvarDiam();xmsg.style.color='#9be37a';xmsg.textContent='+50 💎 resgatados! Você tem '+diam+'.';cod.value=''}};
 function morrer(){if(est!='jogo')return;est='morte';vidas--;sfx.morre();shake=16;
   burst(P.x+11,P.y+20,'#e0a070',18);burst(P.x+11,P.y+20,'#ff4a2a',10);
-  setTimeout(()=>{if(vidas<=0){est='fim';mostrar('Fim de jogo','Você fez '+pts+' pontos. A caverna venceu desta vez!','Recomeçar')}
+  setTimeout(()=>{if(vidas<=0){est='fim';mostrar('Fim de jogo','Você fez '+pts+' pontos. A caverna venceu desta vez! Use 50 diamantes para reviver na fase onde parou.','Recomeçar');revBtn()}
     else{carregar(niv);est='jogo'}},950)}
 function dano(){const p=P;if(p.inv>0||est!='jogo')return;     // forte vira fraco; fraco morre
   if(p.pw>1){p.pw=1;p.y+=8;p.h=32;p.inv=130;p.vy=-7;p.vx=-p.dir*4;p.kb=12;p.cres=0;sfx.dano();shake=8;burst(p.x+11,p.y+16,'#ff4a2a',14);
@@ -222,7 +254,7 @@ function atualizar(){
     if(ch=='L'&&p.y+p.h>r*T+10)return morrer();
     if(ch=='^'&&p.y+p.h>r*T+16&&p.x+p.w-4>c*T+3&&p.x+4<c*T+T-3){dano();if(est!='jogo')return}
     if(ch=='g'||ch=='d'||ch=='c'){if(choca({x:p.x,y:p.y,w:p.w,h:p.h},{x:c*T+6,y:r*T+6,w:T-12,h:T-12})){
-      mapa[r][c]='.';minerios++;pts+=ch=='d'?30:ch=='c'?15:10;sfx[ch=='d'?'diamante':'ore']();if(ch=='d'&&p.pw<2)p.cres=1;
+      mapa[r][c]='.';minerios++;pts+=ch=='d'?30:ch=='c'?15:10;sfx[ch=='d'?'diamante':'ore']();if(ch=='d'){diam++;salvarDiam();if(p.pw<2)p.cres=1}
       burst(c*T+16,r*T+16,ch=='d'?'#6ee7ff':ch=='c'?'#e07bff':'#ffd23f',12)}}}
   for(const e of inim){if(!e.vivo)continue;
     if(e.t=='c'){e.x+=e.dir*e.v;if(e.x>e.x1||e.x<e.x0)e.dir*=-1}
@@ -350,7 +382,7 @@ function desenhar(){
   txt('♥'.repeat(Math.max(0,vidas)),10,26,24,'left','#ff4d5a');
   txt(P.pw>1?'💪 FORTE':'⚠ FRACO',100,24,15,'left',P.pw>1?'#9be37a':'#ffb347');
   txt('Fase '+(niv+1)+' – '+NIV[niv].n,VW/2,24,18,'center','#ffe9b0');
-  txt('💎 '+minerios+'/'+need,VW-150,24,18,'right','#9af0ff');txt('★ '+pts,VW-12,24,18,'right','#ffd23f');
+  txt('⛏ '+minerios+'/'+need,VW-150,24,18,'right','#9af0ff');txt('💎 '+diam+'/50',205,24,16,'left','#6ee7ff');txt('★ '+pts,VW-12,24,18,'right','#ffd23f');
   if(aviso>0){g.globalAlpha=Math.min(1,aviso/40);txt(niv==NIV.length-1?'ÚLTIMA CAVERNA!':'FASE '+(niv+1),VW/2,170,44,'center','#ffcf4a');txt(NIV[niv].n,VW/2,205,26,'center','#fff');
     txt('Colete '+need+' minérios e chegue à porta!',VW/2,240,18,'center','#9af0ff');g.globalAlpha=1}
   if(msgT>0)txt(msg,VW/2,110,20,'center','#ff9a8a');
